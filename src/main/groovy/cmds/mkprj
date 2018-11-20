@@ -1,0 +1,11 @@
+#!/usr/bin/env groovy
+package cmds
+
+
+def execute(def options, def switches, def scm) {
+    'return url to project '
+}
+return this
+
+
+

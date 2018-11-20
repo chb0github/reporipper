@@ -1,0 +1,14 @@
+{
+  "scm": {
+    "bb": {
+      "user" : "chb0bitbucket",
+      "pass" : "",
+      "url" : "https://api.bitbucket.org"
+    },
+    "stash": {
+      "user" : "cbongiorno",
+      "pass" : "",
+      "url" : "https://stash.stback.com"
+    }
+  }
+}

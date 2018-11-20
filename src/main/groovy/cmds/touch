@@ -1,0 +1,15 @@
+#!/usr/bin/env groovy
+package cmds
+
+import static java.lang.System.console
+
+
+def execute(def args, def options, def switches,def config) {
+
+
+    'return url to repo for upload'
+}
+return this.&execute
+
+
+

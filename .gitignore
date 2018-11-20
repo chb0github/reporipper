@@ -1,0 +1,9 @@
+*.iml
+# User-specific stuff
+.idea/
+
+# IntelliJ
+out/
+testing
+requests
+.scm.json
