@@ -3,6 +3,7 @@ package cmds
 
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
+import org.eclipse.jgit.api.Git
 
 @Grapes([
         @Grab(group = 'org.eclipse.jgit', module = 'org.eclipse.jgit', version = '5.1.3.201810200350-r'),
@@ -11,9 +12,10 @@ import org.apache.commons.csv.CSVPrinter
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.CompletableFuture
 
-import static java.lang.String.format
 import static java.lang.System.err
+import static java.util.concurrent.CompletableFuture.supplyAsync
 
 def options = [
         '-p': { projects = (this.binding.variables.projects ?: []) + [it] },
@@ -39,16 +41,18 @@ def date(String d) {
 }
 
 
-def cloneRepo(def repo) {
+def cloneRepo(String uri) {
 
-    if (!new File(repo.id as String).exists()) {
-        if (!this.binding.variables.forceClone)
-            throw new RuntimeException("Repo ${repo.name} does not exist but not allowed to clone")
-
-        def git = format('git clone %s %s', repo.href, repo.id).tap { err.println("\t${it}") }
-
-        git.run().tap { it.ok ?: err.println("\t${it.cli}: ${it.text}") }
-    }
+    def dir = File.createTempDir()
+    [
+            git: Git.cloneRepository()
+                    .setURI(uri)
+                    .setRemote('origin')
+                    .setBare(true)
+                    .setDirectory(dir)
+                    .setCloneAllBranches(true).call(),
+            dir: dir
+    ]
 }
 
 def analyzeRepo(def repo) {
@@ -69,27 +73,16 @@ def analyzeRepo(def repo) {
 
 def processProject(def prj) {
     err.println(prj)
-    def project = scm.getProject(prj).with {
-        [
-                name : it.key,
-                repos: it.repos.values().collect {
-                    [id: it.id, name: it.slug, href: it.links.clone.find { it.name == 'ssh' }?.href]
-                }
-        ]
-    }
+    def project = scm.getProject(prj)
 
-    project.repos.parallelStream().forEach(this.&cloneRepo)
 
-    def results = project.repos.collect(this.&analyzeRepo)
-    if (forceClone) {
-        project.repos.split { new File(it.id as String).exists() && new File(it.id as String).deleteDir() }.tap {
-            deleted, notDeleted ->
-                deleted.each { err.println("\tDeleted ${it.name} ${it.id}") }
-                notDeleted.each { err.println("\tUnable to delete ${it.name} ${it.id}") }
+    Set<Repository> repos = scm.getRepos(project.key).repos.collect {
+        supplyAsync{
+            it.tap { details = cloneRepo(it.clone.ssh) }
         }
-    }
+    }.collect{ it.get()} as Set
 
-
+    def results = repos.collect(this.&analyzeRepo)
 
     def (good, bad) = results.split { it.values().find { it?.code in (200..299) } }
     bad.collect { it.entrySet() }.flatten().each { err.format("\tBad repo %s: %s%n", it.key, it.value?.text ?: '') }

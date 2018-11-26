@@ -194,7 +194,9 @@ String.metaClass.run = {
 }
 
 
-
+(this.class.classLoader.getResources(BBScm.class.package.name.replaceAll('\\.','/')).nextElement().file as File)
+        .listFiles().findAll{ it.name.endsWith('class')}.collect { it.canonicalPath}.collect { it - '.class'}
+        .collect{ it[it.indexOf(BBScm.class.package.name)..-1]}.findAll { !it.contains('$')}.collect(Class.&forName)
 
 def config = new JsonSlurper().parse(new File("${System.properties['user.dir']}/.scm.json"))
 
