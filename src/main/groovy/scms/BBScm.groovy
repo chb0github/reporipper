@@ -8,7 +8,7 @@ import static java.util.concurrent.CompletableFuture.supplyAsync
 /**
  * @author cbongiorno on 9/28/18.
  */
-class BBScm implements Scm {
+class BBScm extends AbstractScm {
 
 
     @Override

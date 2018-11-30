@@ -4,7 +4,7 @@ import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 
 
-class CacheScm implements Scm {
+class CacheScm extends AbstractScm {
 
     private Scm real
 

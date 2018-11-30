@@ -3,11 +3,12 @@ package scms
 import groovy.transform.Memoized
 
 import static java.util.concurrent.CompletableFuture.supplyAsync
-
+import groovy.transform.InheritConstructors
 /**
  * @author cbongiorno on 9/28/18.
  */
-class StashScm implements Scm {
+@InheritConstructors
+class StashScm extends AbstractScm {
 
 
     @Override
@@ -28,6 +29,17 @@ class StashScm implements Scm {
         result
     }
 
+    @Override
+    boolean delProject(String prjName) {
+        def reposDeleted = getRepos(prjName).collect{ repo ->
+            supplyAsync{
+//                https://stash.stback.com/projects/QAA/repos/autobot-dhs-uft
+                new URL("$url/projects/$prjName/repos/${repo.key}").withCreds(this.user, this.pass).json().delete()
+            }
+        }.collect{ it.join() }.inject(true){a,b -> a && b}
+        def prjDeleted = new URL("$url/projects/$prjName").withCreds(this.user,this.pass).json().delete()
+        reposDeleted && prjDeleted
+    }
 
     @Override
     Repository createRepo(String prjKey, String repoName, String description) {

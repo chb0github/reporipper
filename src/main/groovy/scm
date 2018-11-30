@@ -6,6 +6,7 @@ import groovy.transform.SourceURI
 import scms.BBScm
 import scms.Scm
 import scms.StashScm
+import cmds.*
 
 import static java.lang.System.*
 
@@ -67,6 +68,12 @@ URLConnection.metaClass.get = {
 
 URLConnection.metaClass.exists = {
     delegate.setRequestMethod('HEAD')
+    delegate.connect()
+    delegate.responseCode in (200..299)
+}
+URLConnection.metaClass.delete = {
+    delegate.setRequestMethod('DELETE')
+    delegate.doOutput = true
     delegate.connect()
     delegate.responseCode in (200..299)
 }
@@ -194,9 +201,9 @@ String.metaClass.run = {
 }
 
 
-(this.class.classLoader.getResources(BBScm.class.package.name.replaceAll('\\.','/')).nextElement().file as File)
-        .listFiles().findAll{ it.name.endsWith('class')}.collect { it.canonicalPath}.collect { it - '.class'}
-        .collect{ it[it.indexOf(BBScm.class.package.name)..-1]}.findAll { !it.contains('$')}.collect(Class.&forName)
+//(this.class.classLoader.getResources(BBScm.class.package.name.replaceAll('\\.','/')).nextElement().file as File)
+//        .listFiles().findAll{ it.name.endsWith('class')}.collect { it.canonicalPath}.collect { it - '.class'}
+//        .collect{ it[it.indexOf(BBScm.class.package.name)..-1]}.findAll { !it.contains('$')}.collect(Class.&forName)
 
 def config = new JsonSlurper().parse(new File("${System.properties['user.dir']}/.scm.json"))
 
@@ -236,7 +243,7 @@ if (function) {
     def args = binding.variables.remove('args') as String[]
     def format = opts.remove('-format')?.with { format -> evaluate(format as String) } ?: { it }
     function = function >> format >> this.&println
-    function(args, opts, chosenSwitches, config)
+    function(new Context(args, opts, chosenSwitches, config))
 
 } else {
     err.println("Unknown " + "command ${cmd}") || exit(-1)
