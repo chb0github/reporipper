@@ -20,25 +20,33 @@ class StashScm extends AbstractScm {
         for (def body = [isLastPage: false]; !body.isLastPage; page = body.nextPageStart) {
             def tmp = new URL("$url/projects?start=$page").withCreds(this.user, this.pass).json().get()
 
-            if (!tmp.code in (200..299)) {
-                println(tmp.body)
-            }
             body = tmp.body
-            result += body.values.collect{  new Project(name:it.name,key:it.key,description:it.description) } as Set
+            if(tmp.code in (200..299))
+                result += body.values.collect{  new Project(name:it.name,key:it.key,description:it.description) } as Set
         }
         result
     }
 
     @Override
     boolean delProject(String prjName) {
-        def reposDeleted = getRepos(prjName).collect{ repo ->
+        def results = getRepos(prjName).collect{ repo ->
             supplyAsync{
-//                https://stash.stback.com/projects/QAA/repos/autobot-dhs-uft
                 new URL("$url/projects/$prjName/repos/${repo.key}").withCreds(this.user, this.pass).json().delete()
             }
-        }.collect{ it.join() }.inject(true){a,b -> a && b}
+        }.collect{ it.join() }.split { it.code in (200..299) }.with{ pass,fail ->
+            [
+                    pass: pass.collectEntries { [project: it.url] },
+                    fail: fail.collectEntries{ [
+                            project : it.url,
+                            status: it.code
+                    ]}
+            ]
+        }
         def prjDeleted = new URL("$url/projects/$prjName").withCreds(this.user,this.pass).json().delete()
-        reposDeleted && prjDeleted
+        [
+                project: prjDeleted.url,
+                *:results
+        ]
     }
 
     @Override

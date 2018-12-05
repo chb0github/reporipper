@@ -75,7 +75,11 @@ URLConnection.metaClass.delete = {
     delegate.setRequestMethod('DELETE')
     delegate.doOutput = true
     delegate.connect()
-    delegate.responseCode in (200..299)
+    [
+            headers: delegate.headerFields,
+            url   : delegate.url,
+            code   : delegate.responseCode
+    ]
 }
 URLConnection.metaClass.put = {
     delegate.setRequestMethod('PUT')
@@ -216,29 +220,21 @@ def chosenSwitches = args.findAll { it =~ '--.*' } as Set
 args = args - chosenSwitches
 
 toscm = { scm ->
-    String user = config.scm[scm]?.user ?: opts['-user'] ?: console().readLine('username > ')
-    String pass = config.scm[scm]?.pass ?: opts['-pass'] ?: console().readPassword('password > ')
-    URL url = (config.scm[scm].url ?: opts['-url'] ?: console().readLine('url > ')).with { u -> new URL(u as String) }
+    String user = config.scm[scm]?.user ?: opts['-user'] ?: System.console().readLine('username > ')
+    String pass = config.scm[scm]?.pass ?: opts['-pass'] ?: System.console().readPassword('password > ')
+    URL url = (config.scm[scm].url ?: opts['-url'] ?: System.console().readLine('url > ')).with { u -> new URL(u as String) }
     switch (scm) {
         case 'bb': return new BBScm(user: user, pass: pass, url: url.toString()) as Scm
         case 'stash': return new StashScm(user: user, pass: pass, url: url.toString()) as Scm
     }
 
 }
+@SourceURI
+URI myLocation
 
-
-def function = {
-    @SourceURI
-    URI myLocation
-
-    def myparent = new File(myLocation.path).parentFile
-
-    def cmdDir = "$myparent/cmds"
-    def command = new File("$cmdDir/$cmd").with { exists() ? it : new File("$cmdDir/${cmd}.groovy") }
-    if (command.exists()) {
-        return evaluate(command as File)
-    }
-}()
+def function = new File("${new File(myLocation.path).parentFile}/cmds").with{
+    listFiles().find { it.name.toLowerCase() =~ "${cmd}(\\.groovy)?"}?.with { evaluate(it as File)}
+}
 if (function) {
     def args = binding.variables.remove('args') as String[]
     def format = opts.remove('-format')?.with { format -> evaluate(format as String) } ?: { it }

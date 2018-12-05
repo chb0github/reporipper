@@ -4,10 +4,12 @@ import groovy.transform.Memoized
 
 import static java.lang.String.format
 import static java.util.concurrent.CompletableFuture.supplyAsync
+import groovy.transform.InheritConstructors
 
 /**
  * @author cbongiorno on 9/28/18.
  */
+@InheritConstructors
 class BBScm extends AbstractScm {
 
 

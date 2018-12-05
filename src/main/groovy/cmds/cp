@@ -1,5 +1,6 @@
 #!/usr/bin/env groovy
 package cmds
+@Grab(group = 'org.eclipse.jgit', module = 'org.eclipse.jgit', version = '5.1.3.201810200350-r')
 
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.TextProgressMonitor
@@ -11,12 +12,12 @@ import java.util.concurrent.Executors
 
 import static java.util.concurrent.CompletableFuture.supplyAsync
 
-def execute(String[] args, Map<String, Object> options, Set<String> switches, Map<String, Object> config) {
+def execute(Context ctx) {
     def pattern = '([a-zA-Z]+):?([a-zA-Z]+|\\.\\*)?/?([a-zA-Z]+|\\*)?'
 
 
-    def (frmScmName, frmPrjName, fromRepoName) = args[0].with { it =~ pattern }?.with { it[0][1..3] }
-    def (toScmName, toPrjName, toRepoName) = args[1].with { it =~ pattern }?.with { it[0][1..3] }
+    def (frmScmName, frmPrjName, fromRepoName) = ctx.args[0].with { it =~ pattern }?.with { it[0][1..3] }
+    def (toScmName, toPrjName, toRepoName) = ctx.args[1].with { it =~ pattern }?.with { it[0][1..3] }
 
     def frmScm = toscm(frmScmName)
     def toScm = toscm(toScmName)
