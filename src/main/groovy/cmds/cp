@@ -33,6 +33,9 @@ def execute(Context ctx) {
     def avatar = frmScm.getProjectAvatar(frmPrj.key)
 
     def destPrj = toScm.getProject(toPrjName) ?: toScm.createProject(toPrjName, toPrjName, frmPrj.description, avatar)
+    if(!destPrj)
+        throw new RuntimeException('Unable to create project')
+
     Set<Repository> frmRepos = frmScm.getRepos(frmPrj.key)
 
     if(!(frmPrjName in toScm.getGroups())){

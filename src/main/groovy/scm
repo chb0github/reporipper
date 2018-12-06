@@ -11,6 +11,7 @@ import cmds.*
 import static java.lang.System.*
 
 def handlerFactory = new ContentHandlerFactory() {
+    def redmage = this.class.getResourceAsStream('/Redmage_small.png').bytes
     @Override
     ContentHandler createContentHandler(String mimetype) {
         switch (mimetype) {
@@ -27,6 +28,14 @@ def handlerFactory = new ContentHandlerFactory() {
                     @Override
                     Object getContent(URLConnection urlc) throws IOException {
                         new ByteArrayInputStream((urlc.errorStream ?: urlc.inputStream).bytes)
+                    }
+                }
+                break
+            case ~'(?:.*)?image/svg\\+xml.*':
+                new ContentHandler() {
+                    @Override
+                    Object getContent(URLConnection urlc) throws IOException {
+                        new ByteArrayInputStream(redmage)
                     }
                 }
                 break
@@ -237,7 +246,7 @@ def function = new File("${new File(myLocation.path).parentFile}/cmds").with{
 }
 if (function) {
     def args = binding.variables.remove('args') as String[]
-    def format = opts.remove('-format')?.with { format -> evaluate(format as String) } ?: { it }
+    def format = opts.remove('-format')?.with { format -> evaluate(format as String) } ?: { new JsonBuilder(it).toPrettyString() }
     function = function >> format >> this.&println
     function(new Context(args, opts, chosenSwitches, config))
 
