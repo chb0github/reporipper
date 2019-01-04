@@ -1,8 +1,8 @@
 package cmds
 import scms.Scm
 
-class MkPrj implements Command {
-    def execute(Context ctx) {
+class MkPrj extends AbstractCommand<Map<Object,Object>> {
+    Map<Object,Object> execute(Context ctx) {
         def (scmName,key,name,description,avatar) = ctx.args[0]
                 .with{ it =~ "(${ctx.config.scm.keySet().join('|')}):[a-zA-Z0-9-]+/[[a-zA-Z0-9-]+" }?.with{ it[0][1..4] }
         Scm scm = Scm.getScm(scmName,ctx)

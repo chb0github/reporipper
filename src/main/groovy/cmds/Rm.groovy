@@ -3,9 +3,10 @@ package cmds
 import scms.Scm
 import scms.Project
 
-class Rm implements Command{
+class Rm extends AbstractCommand<Map<Object,Object>> {
 
-    def execute(Context ctx) {
+    @Override
+    Map<Object,Object> execute(Context ctx) {
         Class.forName(Scm.class.name)
         def pattern = '([a-zA-Z]+):?([a-zA-Z]+|\\.\\*)?/?([a-zA-Z]+|\\.\\*)?'
 

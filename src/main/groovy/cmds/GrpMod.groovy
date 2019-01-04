@@ -3,9 +3,11 @@ package cmds
 /**
  * @author cbongiorno on 12/6/18.
  */
-class GrpMod implements Command{
+class GrpMod extends AbstractCommand<Map<String,Object>> {
+
     @Override
-    def execute(Context ctx) {
+    Map<String,Object> execute(Context ctx) {
+        // modify a group
         return null
     }
 }

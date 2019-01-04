@@ -2,12 +2,8 @@ package cmds
 /**
  * @author cbongiorno on 10/29/18.
  */
-trait Command {
+interface Command<T> {
 
+    T execute(Context ctx)
 
-    abstract def execute(Context ctx)
-
-    String getName() {
-        this.class.simpleName.toLowerCase()
-    }
 }

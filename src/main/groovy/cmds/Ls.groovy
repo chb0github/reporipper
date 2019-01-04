@@ -4,7 +4,7 @@ import scms.Scm
 /**
  * @author cbongiorno on 12/6/18.
  */
-class Ls implements Command {
+class Ls extends AbstractCommand<Map<Object,Object>> {
 
     def withRepos(def scm, def prj) {
         scm.getRepos(prj)
@@ -12,8 +12,9 @@ class Ls implements Command {
 
 
     @Override
-    def execute(Context ctx) {
-        def (scmName,project) = (ctx.args[0] =~ '(ss|bb):([A-Za-z]+|\\*)').with { matches() ? it[0][1..2] : []}
+    Map<Object,Object> execute(Context ctx) {
+        def (scmName,project) = (ctx.args[0] =~ "(${ctx.config.scm.keySet().join('|')}):([A-Za-z]+|\\*)")
+                .with { matches() ? it[0][1..2] : []}
         Scm scm = Scm.getScm(scmName,ctx)
         if (!project || '*' == project) {
             return [
@@ -40,10 +41,6 @@ class Ls implements Command {
         }
     }
 
-    @Override
-    String toString() {
-        'ls'
-    }
 }
 
 

@@ -12,10 +12,10 @@ import java.util.concurrent.Executors
 
 import static java.util.concurrent.CompletableFuture.supplyAsync
 
-class Cp implements Command{
+class Cp extends AbstractCommand<Map<String,Object>> {
 
-
-    def execute(Context ctx) {
+    @Override
+    Map<String,Object> execute(Context ctx) {
         def pattern = '([a-zA-Z]+):?([a-zA-Z]+|\\.\\*)?/?([a-zA-Z]+|\\*)?'
 
 
