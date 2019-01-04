@@ -2,12 +2,12 @@
   "scm": {
     "bb": {
       "user" : "chb0bitbucket",
-      "pass" : "",
+      "pass" : "SQmgLCHxNhnAcXTQ8BHy",
       "url" : "https://api.bitbucket.org"
     },
     "stash": {
       "user" : "cbongiorno",
-      "pass" : "",
+      "pass" : "M0ngoDB!",
       "url" : "https://stash.stback.com"
     }
   }

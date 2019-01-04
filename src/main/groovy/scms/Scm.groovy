@@ -4,9 +4,20 @@ package scms
  */
 interface Scm {
 
+    static def getScm = { name,ctx ->
+            String user = ctx.config.scm[name]?.user ?: ctx.opts['-user'] ?: System.console().readLine('username > ')
+            String pass = ctx.config.scm[name]?.pass ?: ctx.opts['-pass'] ?: System.console().readPassword('password > ')
+            URL url = (ctx.config.scm[name].url ?: ctx.opts['-url'] ?: System.console().readLine('url > ')).with { u -> new URL(u as String) }
+            ServiceLoader.load(Scm.class).find { it.toString() == name }?.tap {
+                it.user = user
+                it.pass = pass
+                it.url = url.toString()
+//                it.builder().user(user).pass(pass).url(url.toString()).build()
+            }.with {new ImmutableScm(it)}
 
+    }
 
-    boolean repoExists(String prjName,String repoName)
+    boolean repoExists(String prjName, String repoName)
 
     Set<String> getGroups()
 
@@ -15,9 +26,11 @@ interface Scm {
     Project createProject(String name, String key, String description, InputStream avatar)
 
     def createGroup(String groupName)
+
     InputStream getProjectAvatar(String prjname)
 
     Set<Repository> getRepos(String project)
+
     Repository getRepo(String project, String name)
 
     Set<Project> getProjects()
@@ -29,11 +42,5 @@ interface Scm {
 
     Repository createRepo(String prjKey, String repoName, String description)
 
-//    public static Scm getInstance(String name, String user, String pass, String url) {
-//        switch (name) {
-//            case 'bb': return new BBScm(user:user,pass:pass,url:url) as Scm
-//            case 'stash': return new StashScm(user:user,pass:pass,url:url) as Scm
-//        }
-//
-//    }
+    public String getName()
 }

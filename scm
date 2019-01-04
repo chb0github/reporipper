@@ -1,14 +1,10 @@
 #!/usr/bin/env groovy
-
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
-import groovy.transform.SourceURI
-import scms.BBScm
-import scms.Scm
-import scms.StashScm
-import cmds.*
 
-import static java.lang.System.*
+import static java.lang.System.err
+import static java.lang.System.exit
+import cmds.*
 
 def handlerFactory = new ContentHandlerFactory() {
     @Override
@@ -219,26 +215,14 @@ args = args - opts.keySet() - opts.values()
 def chosenSwitches = args.findAll { it =~ '--.*' } as Set
 args = args - chosenSwitches
 
-toscm = { scm ->
-    String user = config.scm[scm]?.user ?: opts['-user'] ?: System.console().readLine('username > ')
-    String pass = config.scm[scm]?.pass ?: opts['-pass'] ?: System.console().readPassword('password > ')
-    URL url = (config.scm[scm].url ?: opts['-url'] ?: System.console().readLine('url > ')).with { u -> new URL(u as String) }
-    switch (scm) {
-        case 'bb': return new BBScm(user: user, pass: pass, url: url.toString()) as Scm
-        case 'stash': return new StashScm(user: user, pass: pass, url: url.toString()) as Scm
-    }
 
-}
-@SourceURI
-URI myLocation
+Command command = ServiceLoader.load(Command.class).find { it.name == cmd }
 
-def function = new File("${new File(myLocation.path).parentFile}/cmds").with{
-    listFiles().find { it.name.toLowerCase() =~ "${cmd}(\\.groovy)?"}?.with { evaluate(it as File)}
-}
-if (function) {
+
+if (command) {
     def args = binding.variables.remove('args') as String[]
     def format = opts.remove('-format')?.with { format -> evaluate(format as String) } ?: { it }
-    function = function >> format >> this.&println
+    function = command.&execute >> format >> this.&println
     function(new Context(args, opts, chosenSwitches, config))
 
 } else {

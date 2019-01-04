@@ -12,6 +12,7 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 class BBScm extends AbstractScm {
 
+    BBScm(){}
 
     @Override
     @Memoized
