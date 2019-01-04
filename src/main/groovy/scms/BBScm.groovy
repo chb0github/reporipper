@@ -12,9 +12,7 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 class BBScm extends AbstractScm {
 
-    BBScm(Map m){
-        super(m)
-    }
+    BBScm(){}
 
     @Override
     @Memoized
@@ -137,7 +135,7 @@ class BBScm extends AbstractScm {
                 [
                         name       : name,
                         key        : key,
-                        description: description ?: '',
+                        description: description,
                         links      : [
                                 avatar: [
                                         href: "data:image/png;base64,${avatar.bytes.encodeBase64()}"

@@ -1,6 +1,7 @@
 *.iml
 # User-specific stuff
 .idea/
+lib/
 
 # IntelliJ
 out/

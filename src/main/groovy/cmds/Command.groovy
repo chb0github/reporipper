@@ -2,13 +2,12 @@ package cmds
 /**
  * @author cbongiorno on 10/29/18.
  */
-interface Command {
+trait Command {
 
 
-    static Command get = {name ->
+    abstract def execute(Context ctx)
 
-
+    String getName() {
+        this.class.simpleName.toLowerCase()
     }
-
-    def execute(Context ctx)
 }

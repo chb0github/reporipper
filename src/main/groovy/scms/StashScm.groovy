@@ -10,6 +10,7 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 class StashScm extends AbstractScm {
 
+    StashScm(){}
 
     @Override
     @Memoized

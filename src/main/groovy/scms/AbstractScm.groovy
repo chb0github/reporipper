@@ -1,16 +1,20 @@
 package scms
+
 import groovy.transform.MapConstructor
+import groovy.transform.builder.Builder
+
 /**
  * @author cbongiorno on 11/29/18.
  */
-@MapConstructor
 abstract class AbstractScm implements Scm {
 
-    final String user
-    final String pass
-    final String url
+    String user
+    String pass
+    String url
 
-    boolean projectExists(String prjName){
+    final String name = this.class.simpleName.replaceAll('([A-Z][a-z]+)[A-Z][a-z]+','$1').toLowerCase()
+
+    boolean projectExists(String prjName) {
         new URL("$url/projects/${stashPrj}").exists()
     }
 

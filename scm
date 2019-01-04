@@ -1,17 +1,12 @@
 #!/usr/bin/env groovy
-
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
-import groovy.transform.SourceURI
-import scms.BBScm
-import scms.Scm
-import scms.StashScm
+
+import static java.lang.System.err
+import static java.lang.System.exit
 import cmds.*
 
-import static java.lang.System.*
-
 def handlerFactory = new ContentHandlerFactory() {
-    def redmage = this.class.getResourceAsStream('/Redmage_small.png').bytes
     @Override
     ContentHandler createContentHandler(String mimetype) {
         switch (mimetype) {
@@ -28,14 +23,6 @@ def handlerFactory = new ContentHandlerFactory() {
                     @Override
                     Object getContent(URLConnection urlc) throws IOException {
                         new ByteArrayInputStream((urlc.errorStream ?: urlc.inputStream).bytes)
-                    }
-                }
-                break
-            case ~'(?:.*)?image/svg\\+xml.*':
-                new ContentHandler() {
-                    @Override
-                    Object getContent(URLConnection urlc) throws IOException {
-                        new ByteArrayInputStream(redmage)
                     }
                 }
                 break
@@ -214,9 +201,6 @@ String.metaClass.run = {
 }
 
 
-//(this.class.classLoader.getResources(BBScm.class.package.name.replaceAll('\\.','/')).nextElement().file as File)
-//        .listFiles().findAll{ it.name.endsWith('class')}.collect { it.canonicalPath}.collect { it - '.class'}
-//        .collect{ it[it.indexOf(BBScm.class.package.name)..-1]}.findAll { !it.contains('$')}.collect(Class.&forName)
 
 def config = new JsonSlurper().parse(new File("${System.properties['user.dir']}/.scm.json"))
 
@@ -228,26 +212,14 @@ args = args - opts.keySet() - opts.values()
 def chosenSwitches = args.findAll { it =~ '--.*' } as Set
 args = args - chosenSwitches
 
-toscm = { scm ->
-    String user = config.scm[scm]?.user ?: opts['-user'] ?: System.console().readLine('username > ')
-    String pass = config.scm[scm]?.pass ?: opts['-pass'] ?: System.console().readPassword('password > ')
-    URL url = (config.scm[scm].url ?: opts['-url'] ?: System.console().readLine('url > ')).with { u -> new URL(u as String) }
-    switch (scm) {
-        case 'bb': return new BBScm(user: user, pass: pass, url: url.toString()) as Scm
-        case 'stash': return new StashScm(user: user, pass: pass, url: url.toString()) as Scm
-    }
 
-}
-@SourceURI
-URI myLocation
+Command command = ServiceLoader.load(Command.class).find { it.name == cmd }
 
-def function = new File("${new File(myLocation.path).parentFile}/cmds").with{
-    listFiles().find { it.name.toLowerCase() =~ "${cmd}(\\.groovy)?"}?.with { evaluate(it as File)}
-}
-if (function) {
+
+if (command) {
     def args = binding.variables.remove('args') as String[]
-    def format = opts.remove('-format')?.with { format -> evaluate(format as String) } ?: { new JsonBuilder(it).toPrettyString() }
-    function = function >> format >> this.&println
+    def format = opts.remove('-format')?.with { format -> evaluate(format as String) } ?: { it.toJson() }
+    function = command.&execute >> format >> this.&println
     function(new Context(args, opts, chosenSwitches, config))
 
 } else {
