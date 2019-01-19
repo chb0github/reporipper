@@ -49,9 +49,15 @@ class BBScm extends AbstractScm {
     }
 
     @Override
+    Set<Repository> getRepos() {
+        getRepos(null)
+    }
+
+    @Override
     @Memoized
     Set<Repository> getRepos(String prj) {
-        def url = format('%s/2.0/repositories/twengg?q=project.key=%s', url, ('"' + prj + '"').encodeURL())
+        def usePrj = prj ? format('q=project.key=%s',('"' + prj + '"').encodeURL()) : ''
+        def url = format("%s/2.0/repositories/twengg?%s", url, usePrj )
         def meta = new URL(url).withCreds(this.user, this.pass).json().get()
 
 
@@ -61,8 +67,8 @@ class BBScm extends AbstractScm {
         }
         def pages = (body.size / 10 as int) + Math.min((body.size % 10) as int, 1)
         (1..pages).collect { page ->
-            def frmt = '%s/2.0/repositories/twengg?page=%d&pagelen=10&q=project.key=%s'
-            def u = format(frmt, url, page, ('"' + prj + '"').encodeURL())
+            def frmt = '%s/2.0/repositories/twengg?page=%d&pagelen=10&%s'
+            def u = format(frmt, url, page, usePrj)
             supplyAsync {
                 new URL(u).withCreds(this.user, this.pass).json().get().with { it.body?.values }
             }

@@ -40,6 +40,11 @@ class CacheScm extends AbstractScm {
     }
 
     @Override
+    Set<Repository> getRepos() {
+        cache('repos',{ real.getRepos() })
+    }
+
+    @Override
     Set<String> getGroups() {
         cache('getGroups', real.&getGroups)
     }

@@ -2,8 +2,9 @@ package cmds
 
 import scms.Scm
 
-class MkGrp extends AbstractCommand<Map<Object,Object>>
-    def execute(Context ctx) {
+class MkGrp extends AbstractCommand<Map<Object,Object>> {
+    @Override
+    Map<Object,Object> execute(Context ctx) {
         def (scmName,group) = ctx.args[0].with{ it =~ "(${ctx.config.scm.keySet().join('|')}):[a-zA-Z0-9]+" }?.with{
             it[0][1..2] }
 

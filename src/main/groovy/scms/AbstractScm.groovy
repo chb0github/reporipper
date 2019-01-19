@@ -2,6 +2,7 @@ package scms
 
 import groovy.transform.MapConstructor
 import groovy.transform.builder.Builder
+import static java.util.concurrent.CompletableFuture.supplyAsync
 
 /**
  * @author cbongiorno on 11/29/18.
@@ -51,6 +52,15 @@ abstract class AbstractScm implements Scm {
     @Override
     Set<Repository> getRepos(String project) {
         throw new UnsupportedOperationException()
+    }
+
+    @Override
+    Set<Repository> getRepos() {
+        this.projects.take(2).collect{ project ->
+            supplyAsync{
+                this.getRepos(project)
+            }
+        }.collect{ it.join() }.flatten()
     }
 
     @Override

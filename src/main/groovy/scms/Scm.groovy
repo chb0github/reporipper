@@ -15,6 +15,7 @@ interface Scm {
 //                it.builder().user(user).pass(pass).url(url.toString()).build()
             }.with {new ImmutableScm(it)}
 
+
     }
 
     boolean repoExists(String prjName, String repoName)
@@ -30,6 +31,8 @@ interface Scm {
     InputStream getProjectAvatar(String prjname)
 
     Set<Repository> getRepos(String project)
+
+    Set<Repository> getRepos()
 
     Repository getRepo(String project, String name)
 
