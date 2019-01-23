@@ -3,4 +3,5 @@ cmds.Rm
 cmds.Ls
 cmds.MkRepo
 cmds.MkPrj
-cmds.Scan
+cmds.Find
+cmds.Grep

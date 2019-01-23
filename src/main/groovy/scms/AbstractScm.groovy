@@ -35,6 +35,11 @@ abstract class AbstractScm implements Scm {
     }
 
     @Override
+    def search(String query) {
+        throw new UnsupportedOperationException()
+    }
+
+    @Override
     Project createProject(String name, String key, String description, InputStream avatar) {
         throw new UnsupportedOperationException()
     }

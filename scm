@@ -43,8 +43,12 @@ URLConnection.setContentHandlerFactory(handlerFactory)
 
 
 URL.metaClass.withCreds = { u, p ->
+    if(!(u && p))
+        throw new IllegalArgumentException('Username or password not supplied')
+
     delegate.openConnection().tap {
-        setRequestProperty('Authorization', "Basic ${(u + ':' + p).bytes.encodeBase64()}")
+        def creds = String.format('%s:%s',u,p).bytes.encodeBase64()
+        setRequestProperty('Authorization', "Basic ${creds}")
     }
 }
 
@@ -203,7 +207,7 @@ String.metaClass.run = {
 
 
 
-def config = new JsonSlurper().parse(new File("${System.properties['user.dir']}/.scm.json"))
+def config = new JsonSlurper().parse(new File('.scm.json'))
 
 def cmd = args[0]
 args = args.drop(1)

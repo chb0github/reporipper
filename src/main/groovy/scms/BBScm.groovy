@@ -20,8 +20,8 @@ class BBScm extends AbstractScm {
         def meta = new URL("$url/2.0/teams/twengg/projects/?pagelen=0").withCreds(this.user, this.pass).json().get()
         def body = meta.body
         int pageCount = (body.size / 10) + Math.min((body.size % 10) as int, 1)
-        if (!meta.code in (200..299)) {
-            throw new RuntimeException(body.toString())
+        if (!(meta.code in (200..299))) {
+            throw new RuntimeException(meta.toString())
         }
         (1..pageCount).collect { page ->
             supplyAsync {
@@ -53,6 +53,26 @@ class BBScm extends AbstractScm {
         getRepos(null)
     }
 
+
+    @Override
+    def search(String query) {
+        def formatStr = '%s/2.0/teams/twengg/search/code?search_query=%s&page=%d&pagelen=%d'
+        def url = format(formatStr,this.url,query,1,1)
+        def meta = new URL(url).withCreds(this.user, this.pass).json().get()
+        def body = meta.body
+        if (!(meta.code in (200..299))) {
+            throw new RuntimeException(meta.toString())
+        }
+        def pages = (body.size / 10 as int) + Math.min((body.size % 10) as int, 1)
+        (1..pages).collect { page ->
+            def u = format(formatStr,this.url,query,page,10)
+            supplyAsync {
+                new URL(u).withCreds(this.user, this.pass).json().get().with { it.body?.values }
+            }
+
+        }.collect { it.join() }.findAll().flatten() as Set
+    }
+
     @Override
     @Memoized
     Set<Repository> getRepos(String prj) {
@@ -62,7 +82,7 @@ class BBScm extends AbstractScm {
 
 
         def body = meta.body
-        if (!meta.code in (200..299)) {
+        if (!(meta.code in (200..299))) {
             throw new RuntimeException(meta.toString())
         }
         def pages = (body.size / 10 as int) + Math.min((body.size % 10) as int, 1)

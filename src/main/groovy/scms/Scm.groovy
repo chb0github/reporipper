@@ -5,9 +5,9 @@ package scms
 interface Scm {
 
     static def getScm = { name,ctx ->
-            String user = ctx.config.scm[name]?.user ?: ctx.opts['-user'] ?: System.console().readLine('username > ')
-            String pass = ctx.config.scm[name]?.pass ?: ctx.opts['-pass'] ?: System.console().readPassword('password > ')
-            URL url = (ctx.config.scm[name].url ?: ctx.opts['-url'] ?: System.console().readLine('url > ')).with { u -> new URL(u as String) }
+            String user = ctx.config.scm[name]?.user ?: ctx.options['-user'] ?: System.console().readLine('username > ')
+            String pass = ctx.config.scm[name]?.pass ?: ctx.options['-pass'] ?: System.console().readPassword('password > ')
+            URL url = (ctx.config.scm[name].url ?: ctx.options['-url']).with { u -> new URL(u as String) }
             ServiceLoader.load(Scm.class).find { it.toString() == name }?.tap {
                 it.user = user
                 it.pass = pass
@@ -33,6 +33,8 @@ interface Scm {
     Set<Repository> getRepos(String project)
 
     Set<Repository> getRepos()
+
+    def search(String query)
 
     Repository getRepo(String project, String name)
 
