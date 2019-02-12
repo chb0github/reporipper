@@ -1,5 +1,5 @@
-package cmds
-import scms.Scm
+package org.bongiorno.reporipper.cmds
+import org.bongiorno.reporipper.scms.*
 class Grep extends AbstractCommand<Object> {
 
     @Override

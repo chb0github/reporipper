@@ -1,5 +1,7 @@
-package cmds
-import scms.Scm
+package org.bongiorno.reporipper.cmds
+
+import org.bongiorno.reporipper.scms.Scm
+
 class Find extends AbstractCommand<Collection<Map<String,Object>>> {
 
     @Override

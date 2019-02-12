@@ -1,13 +1,12 @@
-package scms
+package org.bongiorno.reporipper.scms
 
 import groovy.transform.TupleConstructor
 
 @TupleConstructor
-class ImmutableScm implements Scm{
+class ImmutableScm implements Scm {
 
 
-
-    @Delegate(excludes = ['user','pass','url'])
+    @Delegate(excludes = ['user', 'pass', 'url'])
     final Scm delegate
 
     @Override

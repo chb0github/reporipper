@@ -1,4 +1,4 @@
-package scms
+package org.bongiorno.reporipper.scms
 
 import groovy.transform.Immutable
 

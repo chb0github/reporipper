@@ -1,4 +1,4 @@
-package cmds
+package org.bongiorno.reporipper.cmds
 
 import groovy.transform.Immutable;
 

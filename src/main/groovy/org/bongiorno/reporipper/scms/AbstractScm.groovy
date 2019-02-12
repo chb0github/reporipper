@@ -1,7 +1,6 @@
-package scms
+package org.bongiorno.reporipper.scms
 
-import groovy.transform.MapConstructor
-import groovy.transform.builder.Builder
+
 import static java.util.concurrent.CompletableFuture.supplyAsync
 
 /**

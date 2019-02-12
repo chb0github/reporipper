@@ -2,13 +2,18 @@
   "scm": {
     "bb": {
       "user" : "chb0bitbucket",
-      "pass" : "",
+      "pass" : "bbb",
       "url" : "https://api.bitbucket.org"
     },
     "stash": {
       "user" : "cbongiorno",
       "pass" : "",
       "url" : "https://stash.stback.com"
+    },
+    "stback": {
+      "user" : "cbongiorno",
+      "pass" : "AKCp5buToi8xLvSgPvEnZR17uddxY3gQmm8uRsohK9UbzsznPnFoZejhUKFqdjzCUYfiwW6zE",
+      "url" : "https://artifactory.stback.com/artifactory/api"
     }
   }
 }

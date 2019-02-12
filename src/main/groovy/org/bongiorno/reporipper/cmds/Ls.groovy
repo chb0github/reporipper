@@ -1,6 +1,6 @@
-package cmds
+package org.bongiorno.reporipper.cmds
 
-import scms.Scm
+import org.bongiorno.reporipper.scms.Scm
 /**
  * @author cbongiorno on 12/6/18.
  */

@@ -1,7 +1,7 @@
-package cmds
+package org.bongiorno.reporipper.cmds
+import org.bongiorno.reporipper.scms.Scm
+import org.bongiorno.reporipper.scms.Project
 
-import scms.Scm
-import scms.Project
 
 class Rm extends AbstractCommand<Map<Object,Object>> {
 

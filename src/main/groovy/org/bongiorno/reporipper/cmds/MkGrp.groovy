@@ -1,6 +1,6 @@
-package cmds
+package org.bongiorno.reporipper.cmds
 
-import scms.Scm
+import org.bongiorno.reporipper.scms.Scm
 
 class MkGrp extends AbstractCommand<Map<Object,Object>> {
     @Override

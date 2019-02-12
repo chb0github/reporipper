@@ -1,11 +1,11 @@
-package cmds
+package org.bongiorno.reporipper.cmds
 @Grab(group = 'org.eclipse.jgit', module = 'org.eclipse.jgit', version = '5.1.3.201810200350-r')
 
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.TextProgressMonitor
 import org.eclipse.jgit.transport.URIish
-import scms.Repository
-import scms.Scm
+import org.bongiorno.reporipper.scms.Repository
+import org.bongiorno.reporipper.scms.Scm
 
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors

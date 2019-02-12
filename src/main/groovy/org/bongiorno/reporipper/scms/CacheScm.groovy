@@ -1,4 +1,4 @@
-package scms
+package org.bongiorno.reporipper.scms
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper

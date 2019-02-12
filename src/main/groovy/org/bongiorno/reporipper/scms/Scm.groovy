@@ -1,4 +1,4 @@
-package scms
+package org.bongiorno.reporipper.scms
 /**
  * @author cbongiorno on 9/28/18.
  */
