@@ -1,4 +1,3 @@
-package org.bongiorno.extensions
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 
