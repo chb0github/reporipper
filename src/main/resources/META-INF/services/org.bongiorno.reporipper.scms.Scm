@@ -1,2 +1,2 @@
-scms.BBScm
-scms.StashScm
+org.bongiorno.reporipper.scms.BBScm
+org.bongiorno.reporipper.scms.StashScm

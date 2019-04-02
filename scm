@@ -23,7 +23,6 @@ if (command) {
     def args = binding.variables.remove('args') as String[]
     def format = opts.remove('-format')?.with { format -> evaluate(format as String) } ?: { it.toJson() }
     function = command.&execute >> format >> this.&println
-    exit(0)
     function(new Context(args, opts, chosenSwitches, config))
 
 } else {
