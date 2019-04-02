@@ -1,4 +1,4 @@
-#!/usr/bin/env groovy -cp ./src/main/groovy:/src/main/resources
+#!/usr/bin/env groovy -cp ./src/main/groovy:./src/main/resources
 import org.bongiorno.reporipper.cmds.Context
 import org.bongiorno.reporipper.cmds.Command
 import groovy.json.JsonSlurper
