@@ -18,8 +18,18 @@ class Grep extends AbstractCommand<Object> {
             throw new IllegalArgumentException("No search supplied or search expression is invalid")
 
 
-        Scm.getScm(chosenScm,ctx).search(ctx.args[1])
+        Scm.getScm(chosenScm).search(ctx.args[1])
 
 
+    }
+
+    @Override
+    String[] getArgs() {
+        ['searchArgs','repo']
+    }
+
+    @Override
+    String getDescription() {
+        'searches for a given string in the repos supplied'
     }
 }

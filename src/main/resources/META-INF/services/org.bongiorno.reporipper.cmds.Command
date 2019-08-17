@@ -7,3 +7,4 @@ org.bongiorno.reporipper.cmds.MkGrp
 org.bongiorno.reporipper.cmds.Find
 org.bongiorno.reporipper.cmds.Grep
 org.bongiorno.reporipper.cmds.GrpMod
+org.bongiorno.reporipper.cmds.Committers

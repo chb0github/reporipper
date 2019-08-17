@@ -22,7 +22,7 @@ class StashScm extends AbstractScm {
             def tmp = new URL("$url/projects?start=$page").withCreds(this.user, this.pass).json().get()
 
             body = tmp.body
-            if(tmp.code in (200..299))
+            if((tmp.code as int) in (200..299))
                 result += body.values.collect{  new Project(name:it.name,key:it.key,description:it.description) } as Set
         }
         result
@@ -34,7 +34,7 @@ class StashScm extends AbstractScm {
             supplyAsync{
                 new URL("$url/projects/$prjName/repos/${repo.key}").withCreds(this.user, this.pass).json().delete()
             }
-        }.collect{ it.join() }.split { it.code in (200..299) }.with{ pass,fail ->
+        }.collect{ it.join() }.split { (it.code as int) in (200..299) }.with{ pass,fail ->
             [
                     pass: pass.collectEntries { [project: it.url] },
                     fail: fail.collectEntries{ [
@@ -82,6 +82,7 @@ class StashScm extends AbstractScm {
             it.code in (200..299) ? new Repository(name:it.body.slug,key:it.body.key,description:it.body.description) : null
         }
     }
+
 
     @Override
     @Memoized

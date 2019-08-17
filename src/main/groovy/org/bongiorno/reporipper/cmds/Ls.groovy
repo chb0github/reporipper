@@ -41,6 +41,15 @@ class Ls extends AbstractCommand<Map<Object,Object>> {
         }
     }
 
+    @Override
+    String[] getArgs() {
+        ['map','filter']
+    }
+
+    @Override
+    String getDescription() {
+        'lists all the repos in a given project'
+    }
 }
 
 

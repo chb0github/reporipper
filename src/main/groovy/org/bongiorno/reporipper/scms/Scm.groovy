@@ -1,21 +1,20 @@
 package org.bongiorno.reporipper.scms
+
+import groovy.json.JsonSlurper
+
 /**
  * @author cbongiorno on 9/28/18.
  */
 interface Scm {
+    static Map<String,Object> config = new JsonSlurper().parse((this.getResource('.scm.json')?.file as File) ?: new File('.scm.json'))
+    static def getScm = { name ->
 
-    static def getScm = { name,ctx ->
-            String user = ctx.config.scm[name]?.user ?: ctx.options['-user'] ?: System.console().readLine('username > ')
-            String pass = ctx.config.scm[name]?.pass ?: ctx.options['-pass'] ?: System.console().readPassword('password > ')
-            URL url = (ctx.config.scm[name].url ?: ctx.options['-url']).with { u -> new URL(u as String) }
             ServiceLoader.load(Scm.class).find { it.toString() == name }?.tap {
-                it.user = user
-                it.pass = pass
-                it.url = url.toString()
+                it.user = config.scm[name]?.user
+                it.pass = config.scm[name]?.pass
+                it.url = config.scm[name].url.with { u -> new URL(u as String) }.toString()
 //                it.builder().user(user).pass(pass).url(url.toString()).build()
-            }.with {new ImmutableScm(it)}
-
-
+            }?.with {new ImmutableScm(it)}
     }
 
     boolean repoExists(String prjName, String repoName)
@@ -37,6 +36,8 @@ interface Scm {
     def search(String query)
 
     Repository getRepo(String project, String name)
+
+    Repository getRepo(String name)
 
     Set<Project> getProjects()
 

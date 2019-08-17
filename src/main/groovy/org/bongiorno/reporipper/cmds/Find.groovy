@@ -23,5 +23,13 @@ class Find extends AbstractCommand<Collection<Map<String,Object>>> {
         Scm.getScm(chosenScm,ctx).repos.findAll(filter)
     }
 
+    @Override
+    String[] getArgs() {
+        ['filter']
+    }
 
+    @Override
+    String getDescription() {
+        'find all repos matching the given filter'
+    }
 }

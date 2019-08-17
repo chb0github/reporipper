@@ -20,7 +20,7 @@ class BBScm extends AbstractScm {
         def meta = new URL("$url/2.0/teams/twengg/projects/?pagelen=0").withCreds(this.user, this.pass).json().get()
         def body = meta.body
         int pageCount = (body.size / 10) + Math.min((body.size % 10) as int, 1)
-        if (!(meta.code in (200..299))) {
+        if (!(((meta.code ?: 0) as int) in (200..299))) {
             throw new RuntimeException(meta.toString())
         }
         (1..pageCount).collect { page ->
@@ -36,11 +36,16 @@ class BBScm extends AbstractScm {
     @Override
     Repository getRepo(String project, String repoName) {
         new URL("$url/2.0/repositories/twengg/$repoName").withCreds(this.user, this.pass).json().get().with {
-            it.code in (200..299) ? it.body : null
+            ((it.code ?: 0) as int) in (200..299) ? it.body : null
         }?.with {
             new Repository(name: it.name, key: it.slug, description: it.description,
                     clone: it.links.clone.collectEntries { [(it.name): it.href] })
         }
+    }
+
+    @Override
+    Repository getRepo(String name) {
+        getRepo(null,name)
     }
 
     @Override
@@ -60,7 +65,7 @@ class BBScm extends AbstractScm {
         def url = format(formatStr,this.url,query,1,1)
         def meta = new URL(url).withCreds(this.user, this.pass).json().get()
         def body = meta.body
-        if (!(meta.code in (200..299))) {
+        if (!((meta.code as int) in (200..299))) {
             throw new RuntimeException(meta.toString())
         }
         def pages = (body.size / 10 as int) + Math.min((body.size % 10) as int, 1)
@@ -82,7 +87,7 @@ class BBScm extends AbstractScm {
 
 
         def body = meta.body
-        if (!(meta.code in (200..299))) {
+        if (!((meta.code as int) in (200..299))) {
             throw new RuntimeException(meta.toString())
         }
         def pages = (body.size / 10 as int) + Math.min((body.size % 10) as int, 1)
@@ -90,7 +95,9 @@ class BBScm extends AbstractScm {
             def frmt = '%s/2.0/repositories/twengg?page=%d&pagelen=10&%s'
             def u = format(frmt, url, page, usePrj)
             supplyAsync {
-                new URL(u).withCreds(this.user, this.pass).json().get().with { it.body?.values }
+                new URL(u).withCreds(this.user, this.pass).json().get().with {
+                    ((it.code ?: 0) as int) in (200..299) ? it.body?.values : it.body
+                }
             }
 
         }.collect { it.join() }.findAll().flatten().collect {
@@ -100,14 +107,14 @@ class BBScm extends AbstractScm {
     }
 
     InputStream getProjectAvatar(String prjRef) {
-        new URL("$url/2.0/${prjRef}/avatar.png").withCreds(this.user, this.pass).binary().get().body
+        new URL("$url/2.0/${prjRef}/avatar.png").withCreds(this.user, this.pass).binary().get().body as InputStream
     }
 
     @Override
     @Memoized
     Set<String> getGroups() {
         new URL("$url/1.0/groups/twengg").withCreds(user, pass).json().get().with {
-            it.code in (200..299) ? it.body*.slug as Set : Collections.emptySet()
+            ((it.code ?: 0) as int) in (200..299) ? it.body*.slug as Set : Collections.emptySet()
         }
     }
 
@@ -115,7 +122,7 @@ class BBScm extends AbstractScm {
     def addGroupToRepo(String groupSlug, String reposlug, String priv) {
         new URL("$url/1.0/group-privileges/twengg/$reposlug/twengg/${groupSlug.toLowerCase()}")
                 .withCreds(user, pass).text().put(priv).with {
-            it.code in (200..299) ? it.body : null
+            ((it.code ?: 0) as int) in (200..299)? it.body : null
         }
     }
 
@@ -123,7 +130,7 @@ class BBScm extends AbstractScm {
     @Override
     def createGroup(String groupName) {
         new URL("$url/1.0/groups/twengg").withCreds(user, pass).text().post("name=$groupName").with {
-            it.code in (200..299) ? it.body : null
+            ((it.code ?: 0) as int) in (200..299) ? it.body : null
         }
     }
 
@@ -131,7 +138,7 @@ class BBScm extends AbstractScm {
     @Memoized
     Project getProject(String name) {
         new URL("$url/2.0/teams/twengg/projects/$name").withCreds(user, pass).json().get().with {
-            it.code in (200..299) ? new Project(name: it.body.name, key: it.body.key, description: it.body.description) : null
+            ((it.code ?: 0) as int) in (200..299) ? new Project(name: it.body.name, key: it.body.key, description: it.body.description) : null
         }
     }
 
@@ -147,7 +154,7 @@ class BBScm extends AbstractScm {
                         description: description
                 ]
         ).with {
-            it.code in (200..299) ? it.body : null
+            ((it.code ?: 0) as int) in (200..299) ? it.body : null
         }?.with {
             new Repository(name: it.name, key: it.slug, description: it.description,
                     clone: it.links.clone.collectEntries { [(it.name): it.href] })
@@ -170,7 +177,7 @@ class BBScm extends AbstractScm {
                         is_private : true
                 ]
         ).with {
-            it.code in (200..299) ? new Project(it.body.name, it.body.key,  it.body.description) : null
+            ((it.code ?: 0) as int) in (200..299) ? new Project(it.body.name, it.body.key,  it.body.description) : null
         }
     }
 

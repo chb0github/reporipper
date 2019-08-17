@@ -64,7 +64,12 @@ abstract class AbstractScm implements Scm {
             supplyAsync{
                 this.getRepos(project)
             }
-        }.collect{ it.join() }.flatten()
+        }.collect{ it.join() }.flatten() as Set<Repository>
+    }
+
+    @Override
+    Repository getRepo(String name) {
+        throw new UnsupportedOperationException()
     }
 
     @Override

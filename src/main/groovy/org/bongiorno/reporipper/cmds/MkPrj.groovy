@@ -16,4 +16,15 @@ class MkPrj extends AbstractCommand<Map<Object,Object>> {
 
         scm.createProject(key,name,description, null)
     }
+
+
+    @Override
+    String[] getArgs() {
+        ['key','name','description','avatarUri']
+    }
+
+    @Override
+    String getDescription() {
+        'creates a new project'
+    }
 }

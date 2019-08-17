@@ -7,8 +7,6 @@ import org.eclipse.jgit.transport.URIish
 import org.bongiorno.reporipper.scms.Repository
 import org.bongiorno.reporipper.scms.Scm
 
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Executors
 
 import static java.util.concurrent.CompletableFuture.supplyAsync
 
@@ -116,6 +114,16 @@ class Cp extends AbstractCommand<Map<String,Object>> {
                 message: message,
                 success: success
         ]
+    }
+
+    @Override
+    String[] getArgs() {
+        ['from scm:repo', 'to scm:repo']
+    }
+
+    @Override
+    String getDescription() {
+        'copies from the source scm:repo to the "to" scm:repo. This includes branches, tags and avatars (if possible)'
     }
 }
 

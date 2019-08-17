@@ -16,6 +16,15 @@ class MkRepo extends AbstractCommand<Map<Object,Object>> {
         scm.createRepo(project,repo,description ?: '')
     }
 
+    @Override
+    String[] getArgs() {
+        ['project','repo','description']
+    }
+
+    @Override
+    String getDescription() {
+        'creates a new repo under the given project'
+    }
 }
 
 
