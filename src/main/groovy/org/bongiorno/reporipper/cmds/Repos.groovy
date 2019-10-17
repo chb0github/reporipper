@@ -2,7 +2,7 @@ package org.bongiorno.reporipper.cmds
 
 import org.bongiorno.reporipper.scms.Scm
 
-class Find extends AbstractCommand<Collection<Map<String,Object>>> {
+class Repos extends AbstractCommand<Collection<Map<String,Object>>> {
 
     @Override
     Collection<Map<String,Object>> execute(Context ctx) {
@@ -18,9 +18,11 @@ class Find extends AbstractCommand<Collection<Map<String,Object>>> {
         if(!(ctx.args.length > 1 && ctx.args[1]))
             throw new IllegalArgumentException("No search supplied or search expression is invalid")
 
-        def filter = new GroovyShell(this.class.classLoader).evaluate(ctx.args[1] as String)
+        def filter = {true}
+//        def filter = new GroovyShell(this.class.classLoader).evaluate(ctx.args[1] as String)
 
-        Scm.getScm(chosenScm,ctx).repos.findAll(filter)
+      def all = Scm.getScm(chosenScm).repos.findAll(filter)
+      all
     }
 
     @Override
