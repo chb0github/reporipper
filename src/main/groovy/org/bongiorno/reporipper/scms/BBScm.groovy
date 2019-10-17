@@ -36,7 +36,12 @@ class BBScm extends AbstractScm {
     @Override
     Repository getRepo(String project, String repoName) {
         new URL("$url/2.0/repositories/twengg/$repoName").withCreds(this.user, this.pass).json().get().with {
-            ((it.code ?: 0) as int) in (200..299) ? it.body : null
+            if(((it.code ?: 0) as int) in (200..299) )
+                it.body
+            else {
+                System.err.println("Error fetching repo: code: ${it.code} body: ${it.body}")
+            }
+
         }?.with {
             new Repository(name: it.name, key: it.slug, description: it.description,
                     clone: it.links.clone.collectEntries { [(it.name): it.href] })
