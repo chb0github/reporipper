@@ -6,8 +6,17 @@ import groovy.json.JsonSlurper
 import static java.lang.System.err
 import static java.lang.System.exit
 
-
+@Grab('javax.xml.bind:jaxb-api:2.3.0')
+@Grab('com.sun.xml.bind:jaxb-core:2.3.0.1')
+@Grab('com.sun.xml.bind:jaxb-impl:2.3.0.1')
+@Grab('javax.activation:activation:1.1.1')
 def config = new JsonSlurper().parse(new File('.scm.json'))
+
+@Grab(group = 'com.jayway.jsonpath', module = 'json-path', version = '2.4.0')
+import com.jayway.jsonpath.*
+
+stuff = JsonPath.parse(new File('/Users/cbongiorno/dev/sterling/pipeaas/push.json')).read('$.push.changes[*].commits[*].hash').class
+println(stuff)
 
 def cmd = args[0]
 args = args.drop(1)
